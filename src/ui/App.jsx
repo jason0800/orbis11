@@ -1,7 +1,15 @@
 import { useState } from 'react';
+import { ReactFlow, Background, Controls } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 import './App.css'
 
-function App() {
+ 
+const fileNode = [
+  { id: '1', position: { x: 50, y: 50 }, data: { label: 'hello.txt' } }
+];
+// const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+
+export default function App() {
   const [pong, setPong] = useState("")
   const [fileName, setFileName] = useState("")
 
@@ -33,17 +41,23 @@ function App() {
       <button onClick={handleClick}>Ping</button>
       <p>{pong}</p>
 
-      <div
+      <p>{fileName}</p>
+
+      <div 
+        style={{ width: '400px', height: '300px', border: 'solid blue'}}
         id="dropzone"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         className="drop-zone"
       >
-        Drop File Here
+        <ReactFlow
+          nodes={fileNode}
+          // edges={initialEdges}
+        >
+          <Background />
+          <Controls />
+        </ReactFlow>
       </div>
-      <p>{fileName}</p>
     </>
   )
 }
-
-export default App
