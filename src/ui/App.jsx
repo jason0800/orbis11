@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { ReactFlow, Background, Controls } from '@xyflow/react';
+import * as d3 from "d3";
 import '@xyflow/react/dist/style.css';
 import './App.css'
 
 
 export default function App() {
-  const [fileNodes, setFileNodes] = useState([
+  const [edges, setEdges] = useState([])
+  const [nodes, setNodes] = useState([
     {
       id: '1',
       position: { x: 0, y: 0 },
@@ -13,32 +15,70 @@ export default function App() {
     },
   ])
 
+  // const chaos = d3.stratify()([
+  //   {id: "Chaos"},
+  //   {id: "Gaia", parentId: "Chaos"},
+  //   {id: "Eros", parentId: "Chaos"},
+  //   {id: "Erebus", parentId: "Chaos"},
+  //   {id: "Tartarus", parentId: "Chaos"},
+  //   {id: "Mountains", parentId: "Gaia"},
+  //   {id: "Pontus", parentId: "Gaia"},
+  //   {id: "Uranus", parentId: "Gaia"}
+  // ])
+
+  // const treeLayout = d3.tree()
+  // treeLayout.nodeSize([180, 130])
+  // treeLayout(chaos)
+  
+  // console.log("chaos", chaos)
+
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
     if (response) {
-      console.log("This is the response: ", response)
-
-      const folderNode = [ 
+      const folder = [ 
         {
-          id: `${Math.random().toString(36).substring(2)}` ,
-          position: { x: Math.random()*250, y: Math.random()*250 },
-          data: { label: response.folderName }
+          id: response.folderName,
+          name: response.folderName,
         }
       ]
 
-      const nodesOfFiles = response.filesInFolder.map((file) => (
+      const files = response.filesInFolder.map((file) => (
         {
-          id: `${Math.random().toString(36).substring(2)}` ,
-          position: { x: Math.random()*250, y: Math.random()*250 },
-          data: { label: file }
+          id: file,
+          name: file,
+          parentId: response.folderName,
         }
       ))
 
-      const allNodes = folderNode.concat(nodesOfFiles)
+      const root = d3.stratify()(folder.concat(files))
+      console.log("root: ", root)
+      
+      const treeLayout = d3.tree()
+      treeLayout.nodeSize([180, 130])
+      treeLayout(root)
 
-      console.log("allNodes: ", allNodes)
+      const nodes = root.descendants().map((descendant) => {
+        return (
+          {
+            id: descendant.id,
+            position: { x: descendant.x, y: descendant.y },
+            data: { label: descendant.data.name },
+          }
+        )
+      })
 
-      setFileNodes(allNodes)
+      const edges = root.links().map((link) => {
+        return (
+          {
+            id: `${link.source.id}->${link.target.id}`,
+            source: link.source.id,
+            target: link.target.id,
+          }
+        )
+      })
+
+      setNodes(nodes)
+      setEdges(edges)
     }
   };
 
@@ -46,7 +86,7 @@ export default function App() {
     <>
       <button onClick={handleSelectFolder}>Select Folder</button>
       <div style={{ width: "700px", height: "500px" }} >
-        <ReactFlow nodes={fileNodes} edges={[]}>
+        <ReactFlow nodes={nodes} edges={edges}>
           <Background />
           <Controls />
         </ReactFlow>
