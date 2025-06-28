@@ -1,11 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 function createWindow () {
   const win = new BrowserWindow({
     width: 1000,
     height: 600,
     webPreferences: {
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
   }
@@ -26,9 +28,25 @@ function createWindow () {
 app.whenReady().then(() => {
   ipcMain.handle("ping", () => "pong")
 
+  ipcMain.handle('select-folder', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    });
+
+    if (canceled) {
+      return null;
+    }
+
+    console.log(filePaths)
+
+    const folderPath = filePaths[0];
+    return fs.readdirSync(folderPath);
+  })
+
   createWindow()
 })
 
+console.log("From main.js")
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
