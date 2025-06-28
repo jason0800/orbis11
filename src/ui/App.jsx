@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ReactFlow, Background, Controls, MiniMap } from '@xyflow/react';
+import { ReactFlow, Background, Controls } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './App.css'
 
@@ -18,7 +18,15 @@ export default function App() {
     if (response) {
       console.log("This is the response: ", response)
 
-      const nodes = response.map((file) => (
+      const folderNode = [ 
+        {
+          id: `${Math.random().toString(36).substring(2)}` ,
+          position: { x: Math.random()*250, y: Math.random()*250 },
+          data: { label: response.folderName }
+        }
+      ]
+
+      const nodesOfFiles = response.filesInFolder.map((file) => (
         {
           id: `${Math.random().toString(36).substring(2)}` ,
           position: { x: Math.random()*250, y: Math.random()*250 },
@@ -26,9 +34,11 @@ export default function App() {
         }
       ))
 
-      console.log(nodes)
+      const allNodes = folderNode.concat(nodesOfFiles)
 
-      setFileNodes(nodes)
+      console.log("allNodes: ", allNodes)
+
+      setFileNodes(allNodes)
     }
   };
 
@@ -36,10 +46,9 @@ export default function App() {
     <>
       <button onClick={handleSelectFolder}>Select Folder</button>
       <div style={{ width: "700px", height: "500px" }} >
-        <ReactFlow nodes={fileNodes}>
+        <ReactFlow nodes={fileNodes} edges={[]}>
           <Background />
           <Controls />
-          <MiniMap />
         </ReactFlow>
       </div>
     </>
