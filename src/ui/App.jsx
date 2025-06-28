@@ -15,42 +15,13 @@ export default function App() {
     },
   ])
 
-  // const chaos = d3.stratify()([
-  //   {id: "Chaos"},
-  //   {id: "Gaia", parentId: "Chaos"},
-  //   {id: "Eros", parentId: "Chaos"},
-  //   {id: "Erebus", parentId: "Chaos"},
-  //   {id: "Tartarus", parentId: "Chaos"},
-  //   {id: "Mountains", parentId: "Gaia"},
-  //   {id: "Pontus", parentId: "Gaia"},
-  //   {id: "Uranus", parentId: "Gaia"}
-  // ])
-
-  // const treeLayout = d3.tree()
-  // treeLayout.nodeSize([180, 130])
-  // treeLayout(chaos)
-  
-  // console.log("chaos", chaos)
-
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
     if (response) {
-      const folder = [ 
-        {
-          id: response.folderName,
-          name: response.folderName,
-        }
-      ]
 
-      const files = response.filesInFolder.map((file) => (
-        {
-          id: file,
-          name: file,
-          parentId: response.folderName,
-        }
-      ))
+      console.log("\n\n RESPONSE: ", response)
 
-      const root = d3.stratify()(folder.concat(files))
+      const root = d3.stratify()(response)
       console.log("root: ", root)
       
       const treeLayout = d3.tree()
