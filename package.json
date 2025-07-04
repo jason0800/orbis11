@@ -1,15 +1,16 @@
 {
-  "name": "electron-react-drag-drop",
+  "name": "orbis11",
   "private": true,
   "version": "0.0.0",
   "main": "src/electron/main.js",
+  "type": "module",
   "scripts": {
     "dev:react": "vite",
-    "dev:electron": "electron .",
+    "dev:electron": "cross-env NODE_ENV=development electron .",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "electron ."
+    "dist:win": "npm run build && electron-builder --win --x64"
   },
   "dependencies": {
     "@xyflow/react": "^12.7.1",
@@ -23,7 +24,9 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",
+    "cross-env": "^7.0.3",
     "electron": "^37.1.0",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.29.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

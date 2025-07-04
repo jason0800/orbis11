@@ -1,0 +1,15 @@
+{
+  "appId": "com.j-wang.orbis11-ts",
+  "files": ["src/electron", "dist-react"],
+  "icon": "./desktopIcon.png",
+  "mac": {
+    "target": "dmg"
+  },
+  "linux": {
+    "target": "AppImage",
+    "category": "Utility"
+  },
+  "win": {
+    "target": ["portable", "msi"]
+  }
+}

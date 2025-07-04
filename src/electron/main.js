@@ -1,29 +1,27 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
-const path = require('path');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import path from "node:path";
+import fs from "node:fs";
+import { v4 as uuidv4 } from 'uuid';
+import { isDev } from './util.js';
 
 function createWindow () {
   const win = new BrowserWindow({
     width: 1200,
     height: 700,
     webPreferences: {
+      preload: path.join(app.getAppPath(), 'src/electron/preload.cjs'),
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      nodeIntegration: false
     }
-  }
-)
+  })
 
-  const isDev = !app.isPackaged;
-  console.log(isDev)
+  console.log(globalThis.process.env.NODE_ENV)
 
-  if (isDev) {
-    win.loadURL('http://localhost:5173');
+  if (isDev()) {
+    win.loadURL("http://localhost:520/")
   } else {
-    win.loadFile(path.join(__dirname, '../dist/index.html'));
+    win.loadFile(path.join(app.getAppPath(), 'dist-react/index.html'))
   }
-
-  win.loadURL('http://localhost:5173/')
   win.webContents.openDevTools()
 }
 
@@ -70,8 +68,10 @@ app.whenReady().then(() => {
   createWindow()
 })
 
+console.log(globalThis)
+
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  if (globalThis.process.platform !== 'darwin') {
     app.quit()
   }
 })
