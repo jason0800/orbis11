@@ -3,7 +3,7 @@ import { ReactFlow, Background, Controls } from '@xyflow/react';
 import * as d3 from "d3";
 import '@xyflow/react/dist/style.css';
 import './App.css'
-
+import CleanNode from './components/CleanNode'
 
 export default function App() {
   const [edges, setEdges] = useState([])
@@ -12,8 +12,13 @@ export default function App() {
       id: '1',
       position: { x: 0, y: 0 },
       data: { label: "hello.txt" },
+      type: 'clean'
     },
   ])
+
+  const nodeTypes = {
+    clean: CleanNode,
+  };
 
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
@@ -34,6 +39,7 @@ export default function App() {
             id: descendant.id,
             position: { x: descendant.x, y: descendant.y },
             data: { label: descendant.data.name },
+            type: 'clean'
           }
         )
       })
@@ -57,7 +63,7 @@ export default function App() {
     <>
       <button onClick={handleSelectFolder}>Select Folder</button>
       <div style={{ width: "700px", height: "500px" }} >
-        <ReactFlow nodes={nodes} edges={edges}>
+        <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}>
           <Background />
           <Controls />
         </ReactFlow>

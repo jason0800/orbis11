@@ -15,8 +15,6 @@ function createWindow () {
     }
   })
 
-  console.log(globalThis.process.env.NODE_ENV)
-
   if (isDev()) {
     win.loadURL("http://localhost:520/")
   } else {
@@ -26,10 +24,7 @@ function createWindow () {
 }
 
 const scanDirectory = (dirPath, parentId, result = []) => {
-
     const contents = fs.readdirSync(dirPath)
-    console.log("CALLING SCANDIRECTORY ON: ", dirPath)
-    console.log("parentId is:" , parentId)
     
     contents.forEach(item => {
       const itemPath = path.join(dirPath, item)
@@ -41,34 +36,29 @@ const scanDirectory = (dirPath, parentId, result = []) => {
           parentId: parentId,
           name: path.basename(itemPath)
       })
-
-      console.log("RESULT: ", result)
       
       if (stats.isDirectory()) {
           scanDirectory(itemPath, itemId, result)
       }
     })
-
-    console.log("RETURNING FROM: ", dirPath)
     return result
 }
 
 app.whenReady().then(() => {
   ipcMain.handle('select-folder', () => {
-    const folderPath = dialog.showOpenDialogSync({properties: ['openDirectory']})[0]
-    console.log("folderPath: ", folderPath)
+    const folderPathArr = dialog.showOpenDialogSync({properties: ['openDirectory']})
+    console.log("folderPathArr: ", folderPathArr)
 
-    const strata = [ { id: "root", name: path.basename(folderPath) } ]
-    const everything = strata.concat(scanDirectory(folderPath, "root"))
-    console.log("\n\n EVERYTHING: ", everything)
-
-    return everything
+    if (folderPathArr) {
+      const folderPath = folderPathArr[0]
+      const rootNode = [ { id: "root", name: path.basename(folderPath) } ]
+      const hierarchy = rootNode.concat(scanDirectory(folderPath, "root"))
+      return hierarchy
+    }
   })
 
   createWindow()
 })
-
-console.log(globalThis)
 
 app.on('window-all-closed', () => {
   if (globalThis.process.platform !== 'darwin') {
