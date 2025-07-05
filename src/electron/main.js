@@ -23,25 +23,39 @@ function createWindow () {
   win.webContents.openDevTools()
 }
 
-const scanDirectory = (dirPath, parentId, result = []) => {
-    const contents = fs.readdirSync(dirPath)
-    
-    contents.forEach(item => {
-      const itemPath = path.join(dirPath, item)
-      const stats = fs.statSync(itemPath)
-      const itemId = uuidv4().substring(20)
+const scanFolders = (dirPath, parentId = null, folders = [], folderId = null) => {
+  const contents = fs.readdirSync(dirPath)
+  console.log("contents: ", contents)
 
-      result.push({
-          id: itemId,
-          parentId: parentId,
-          name: path.basename(itemPath)
-      })
-      
-      if (stats.isDirectory()) {
-          scanDirectory(itemPath, itemId, result)
-      }
-    })
-    return result
+  // Collect files in this directory
+  const files = contents.filter(item => {
+    const itemPath = path.join(dirPath, item);
+    return fs.statSync(itemPath).isFile();
+  });
+
+  console.log("FILES: ", files)
+
+  if (!folderId) { // if folderId is null, then generate one.
+    folderId = uuidv4().substring(20)
+  }
+
+  folders.push({
+    id: folderId,
+    parentId: parentId,
+    name: path.basename(dirPath),
+    files: files
+  })
+
+  contents.forEach(item => {
+    const itemPath = path.join(dirPath, item)
+    const stats = fs.statSync(itemPath)
+
+    if (stats.isDirectory()) {
+      const subFolderId = uuidv4().substring(20)
+      scanFolders(itemPath, folderId, folders, subFolderId)
+    }
+  })
+  return folders
 }
 
 app.whenReady().then(() => {
@@ -51,9 +65,7 @@ app.whenReady().then(() => {
 
     if (folderPathArr) {
       const folderPath = folderPathArr[0]
-      const rootNode = [ { id: "root", name: path.basename(folderPath) } ]
-      const hierarchy = rootNode.concat(scanDirectory(folderPath, "root"))
-      return hierarchy
+      return scanFolders(folderPath)
     }
   })
 
