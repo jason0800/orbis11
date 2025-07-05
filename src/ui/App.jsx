@@ -29,7 +29,7 @@ export default function App() {
       // console.log("root: ", root)
       
       const treeLayout = d3.tree()
-      treeLayout.nodeSize([220, 160])
+      treeLayout.nodeSize([250, 260])
       treeLayout(root)
 
       console.log("DESCENDANTS: ", root.descendants())
@@ -63,11 +63,13 @@ export default function App() {
   return (
     <>
       <button onClick={handleSelectFolder}>Select Folder</button>
-      <div style={{ width: "700px", height: "500px" }} >
+      <div style={{ width: "1200px", height: "700px" }} >
         <ReactFlow
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          minZoom={0.1}  // <- lower this to zoom out further
+          maxZoom={2}
         >
           <Background />
           <Controls />

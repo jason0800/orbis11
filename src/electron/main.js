@@ -36,7 +36,7 @@ const scanFolders = (dirPath, parentId = null, folders = [], folderId = null) =>
   console.log("FILES: ", files)
 
   if (!folderId) { // if folderId is null, then generate one.
-    folderId = uuidv4().substring(20)
+    folderId = "root"
   }
 
   folders.push({
