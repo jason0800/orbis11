@@ -120,6 +120,11 @@ html, body, #root {
   border-radius: 3px;
 }
 
+/* Darken scrollbar when hovering over folder node */
+.folder-node:hover .folder-node-files::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
 .file-name {
   overflow: hidden;
   text-overflow: ellipsis;
