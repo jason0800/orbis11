@@ -11,7 +11,7 @@ export default function CleanNode(props) {
         <span>{label}</span>
       </div>
 
-      <div className="folder-node-files">
+      <div className="folder-node-files" >
         {files.map((file, index) => {
           const dotIndex = file.lastIndexOf('.');
           const namePart = dotIndex !== -1 ? file.substring(0, dotIndex) : file;

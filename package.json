@@ -11,11 +11,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "dist:win": "npm run build && electron-builder --win --x64"
+    "dist:win": "npm run build && electron-builder --win --x64",
+    "dist:mac": "npm run build && electron-builder --mac --arm64"
   },
   "dependencies": {
     "@xyflow/react": "^12.7.1",
     "d3": "^7.9.0",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "uuid": "^11.1.0"

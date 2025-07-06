@@ -4,16 +4,11 @@ import * as d3 from "d3";
 import '@xyflow/react/dist/style.css';
 import './App.css'
 import FolderNode from './components/FolderNode'
+import Sidebar from './components/SideBar';
 
 export default function App() {
   const [edges, setEdges] = useState([])
-  const [nodes, setNodes] = useState([
-    {
-      id: '1',
-      position: { x: 0, y: 0 },
-      data: { label: "hello.txt" },
-    },
-  ])
+  const [nodes, setNodes] = useState([])
 
   const nodeTypes = {
     folderNode: FolderNode,
@@ -61,20 +56,24 @@ export default function App() {
   };
 
   return (
-    <>
-      <button onClick={handleSelectFolder}>Select Folder</button>
-      <div style={{ width: "1200px", height: "700px" }} >
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          minZoom={0.1}  // <- lower this to zoom out further
-          maxZoom={2}
-        >
-          <Background />
-          <Controls />
-        </ReactFlow>
-      </div>
-    </>
+      <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden'}}>
+        <Sidebar handleSelectFolder={handleSelectFolder}/>
+        <div style={{ flexGrow: 1, height: '100vh' }} >
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            minZoom={0.1}  // <- lower this to zoom out further
+            maxZoom={2}
+            style={{
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <Background />
+            <Controls />
+          </ReactFlow>
+        </div>
+      </div >
   )
 }
