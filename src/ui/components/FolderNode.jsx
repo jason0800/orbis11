@@ -1,9 +1,8 @@
 import { Handle } from "@xyflow/react";
 
 export default function CleanNode(props) {
-  console.log("PROPS: ", props)
-
-  const {label, files} = props.data
+  const id = props.id
+  const {label, files, isEndNode} = props.data
   
   return (
     <div className="folder-node">
@@ -26,13 +25,11 @@ export default function CleanNode(props) {
           )
         })}
       </div>
-
       <div className="folder-node-footer">
         {files.length} items
       </div>
-
-      {props.id !== 'root' && <Handle type="target" position="top" style={{ background: '#555' }} />}
-      <Handle type="source" position="bottom" style={{ background: '#555' }} />
+      {id !== 'root' && <Handle type="target" position="top" style={{ background: '#555' }} />}
+      <Handle type="source" position="bottom" style={{ background: isEndNode ? 'transparent' : '#555', display: isEndNode ? 'none' : 'block'  }} />
     </div>
   );
 }

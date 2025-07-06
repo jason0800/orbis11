@@ -34,7 +34,7 @@ export default function App() {
           {
             id: descendant.id,
             position: { x: descendant.x, y: descendant.y },
-            data: { label: descendant.data.name, files: descendant.data.files},
+            data: { label: descendant.data.name, files: descendant.data.files, isEndNode: descendant.data.isEndNode},
             type: 'folderNode'
           }
         )
@@ -63,7 +63,7 @@ export default function App() {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
-            minZoom={0.1}  // <- lower this to zoom out further
+            minZoom={0.1}
             maxZoom={2}
             style={{
               width: '100%',

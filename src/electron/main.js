@@ -39,22 +39,39 @@ const scanFolders = (dirPath, parentId = null, folders = [], folderId = null) =>
     folderId = "root"
   }
 
-  folders.push({
-    id: folderId,
-    parentId: parentId,
-    name: path.basename(dirPath),
-    files: files
-  })
-
-  contents.forEach(item => {
+  const foldersInThisFolder = contents.filter((item) => {
     const itemPath = path.join(dirPath, item)
-    const stats = fs.statSync(itemPath)
-
-    if (stats.isDirectory()) {
-      const subFolderId = uuidv4().substring(20)
-      scanFolders(itemPath, folderId, folders, subFolderId)
-    }
+    return fs.statSync(itemPath).isDirectory()
   })
+
+  if (foldersInThisFolder.length !== 0) {
+    folders.push({
+      id: folderId,
+      parentId: parentId,
+      name: path.basename(dirPath),
+      files: files,
+      isEndNode: false, // is not an end node if foldersInThisFolder not equal to 0
+    })
+
+    // continue recursive scan only if folder is not an end node
+    contents.forEach(item => {    
+      const itemPath = path.join(dirPath, item)
+      const stats = fs.statSync(itemPath)
+
+      if (stats.isDirectory()) {
+        const subFolderId = uuidv4().substring(20)
+        scanFolders(itemPath, folderId, folders, subFolderId)
+      }
+    })
+  } else {
+    folders.push({
+      id: folderId,
+      parentId: parentId,
+      name: path.basename(dirPath),
+      files: files,
+      isEndNode: true, // is an end node if foldersInThisFolder equal to 0
+    })
+  }
   return folders
 }
 
