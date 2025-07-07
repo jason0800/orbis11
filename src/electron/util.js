@@ -30,6 +30,7 @@ export function scanFolders(dirPath, parentId = null, folders = [], folderId) {
     items.forEach((item) => {
         const itemPath = path.join(dirPath, item)
         const stats = fs.statSync(itemPath)
+        console.log("ITEM PATH:", itemPath)
 
         if (stats.isDirectory()) {
             subfolders.push({
@@ -38,7 +39,8 @@ export function scanFolders(dirPath, parentId = null, folders = [], folderId) {
         })} else if (stats.isFile()) {
             files.push({
                 name: path.basename(itemPath),
-                size: formatBytes(stats.size)
+                size: formatBytes(stats.size),
+                path: itemPath
             })
         }
     })
