@@ -3,6 +3,7 @@ import { Handle } from "@xyflow/react";
 export default function CleanNode(props) {
   const id = props.id
   const {label, files, isEndNode} = props.data
+  // console.log("PROPS: ", props)
   
   return (
     <div className="folder-node">
@@ -12,15 +13,16 @@ export default function CleanNode(props) {
 
       <div className="folder-node-files" >
         {files.map((file, index) => {
-          const dotIndex = file.lastIndexOf('.');
-          const namePart = dotIndex !== -1 ? file.substring(0, dotIndex) : file;
-          const extPart = dotIndex !== -1 ? file.substring(dotIndex) : '';
+          const dotIndex = file.name.lastIndexOf('.');
+          const namePart = dotIndex !== -1 ? file.name.substring(0, dotIndex) : file;
+          const extPart = dotIndex !== -1 ? file.name.substring(dotIndex) : '';
           return (
             <div className="folder-node-file" key={index}>
               <span className="file-name">
                 {namePart}
                 <span className="file-ext">{extPart}</span>
               </span>
+              <span className="file-size">{file.size}</span>
             </div>
           )
         })}

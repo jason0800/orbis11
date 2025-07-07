@@ -24,17 +24,17 @@ export default function App() {
       // console.log("root: ", root)
       
       const treeLayout = d3.tree()
-      treeLayout.nodeSize([250, 260])
+      treeLayout.nodeSize([300, 280])
       treeLayout(root)
 
       console.log("DESCENDANTS: ", root.descendants())
 
-      const nodes = root.descendants().map((descendant) => {
+      const nodes = root.descendants().map((desc) => {
         return (
           {
-            id: descendant.id,
-            position: { x: descendant.x, y: descendant.y },
-            data: { label: descendant.data.name, files: descendant.data.files, isEndNode: descendant.data.isEndNode},
+            id: desc.id,
+            position: { x: desc.x, y: desc.y },
+            data: { label: desc.data.name, files: desc.data.files, isEndNode: desc.data.isEndNode},
             type: 'folderNode'
           }
         )
