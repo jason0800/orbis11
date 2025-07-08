@@ -1,8 +1,16 @@
 import { Handle } from "@xyflow/react";
 
+function handleFileClick(filePath) {
+  window.electronAPI.openFile(filePath)
+  .then(result => {
+    if (result) {
+      alert(`Failed to open file: ${result}`);
+    }
+  });
+}
+
 function FolderNode(props) {
-  const id = props.id
-  const {label, files, isEndNode} = props.data
+  const {label, items} = props.data
   console.log("PROPS: ", props)
   
   return (
@@ -12,38 +20,28 @@ function FolderNode(props) {
           <span>{label}</span>
         </div>
         <div className="folder-node-files" >
-          {files.map((file, index) => {
-            const dotIndex = file.name.lastIndexOf('.');
-            const namePart = dotIndex !== -1 ? file.name.substring(0, dotIndex) : file.name;
-            const extPart = dotIndex !== -1 ? file.name.substring(dotIndex) : '';
+          {items.map((item) => {
             return (
               <div
                 className="folder-node-file"
-                title={file.name}
-                key={index}
-                onClick={() => {
-                  window.electronAPI.openFile(file.path)
-                    .then(result => {
-                      if (result) {
-                        alert(`Failed to open file: ${result}`);
-                      }
-                    });
-                }}
+                key={item.id}
+                title={item.name}
+                onClick={() => handleFileClick(item.path)}
               >
                 <span className="file-name">
-                  {namePart}
-                  <span className="file-ext">{extPart}</span>
+                  {item.name}
+                  {/* <span className="file-ext">{extPart}</span> */}
                 </span>
-                <span className="file-size">{file.size}</span>
+                {/* <span className="file-size">{file.size}</span> */}
               </div>
             )
           })}
         </div>
         <div className="folder-node-footer">
-          {files.length} items
+          {items.length} items
         </div>
-        {id !== 'root' && <Handle type="target" position="top" style={{ background: '#555' }} />}
-        <Handle type="source" position="bottom" style={{ background: isEndNode ? 'transparent' : '#555', display: isEndNode ? 'none' : 'block'  }} />
+        <Handle type="target" position="top" style={{ background: '#555' }} />
+        <Handle type="source" position="bottom" style={{ background: '#555', display: 'block' }} />
       </div>
     </>
   );

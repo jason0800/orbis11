@@ -1,5 +1,7 @@
 {
   "name": "orbis11",
+  "author": "JW",
+  "description": "file structure visualiser",
   "private": true,
   "version": "0.0.0",
   "main": "src/electron/main.js",
@@ -16,7 +18,6 @@
   },
   "dependencies": {
     "@xyflow/react": "^12.7.1",
-    "d3": "^7.9.0",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

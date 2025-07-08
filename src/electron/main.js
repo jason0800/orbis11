@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import path from "node:path";
-import { isDev, scanFolders} from './util.js';
+import { isDev, scanFolder } from './util.js';
 
 function createWindow () {
   const win = new BrowserWindow({
@@ -26,22 +26,22 @@ app.whenReady().then(() => {
     const folderPathArr = dialog.showOpenDialogSync({properties: ['openDirectory']})
     
     if (folderPathArr) {
-      return scanFolders(folderPathArr[0])
+      return scanFolder(folderPathArr[0])
     }
   })
 
   ipcMain.handle('open-file', async (event, filePath) => {
-  try {
-    const result = await shell.openPath(filePath);
-    if (result) {
-      console.error('Error opening file:', result);
+    try {
+      const result = await shell.openPath(filePath);
+      if (result) {
+        console.error('Error opening file:', result);
+      }
+      return result; // empty string means success
+    } catch (err) {
+      console.error('Failed to open file:', err);
+      throw err;
     }
-    return result; // empty string means success
-  } catch (err) {
-    console.error('Failed to open file:', err);
-    throw err;
-  }
-});
+  });
   createWindow()
 })
 
