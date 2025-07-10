@@ -7,20 +7,52 @@ import Sidebar from './components/SideBar';
 
 export default function App() {
   const [nodes, setNodes] = useState([])
-
-const onNodesChange = useCallback(
-  (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-  [],
-);
-
+  
   const nodeTypes = {
     folderNode: FolderNode,
   };
 
+  const handleDrop = (e) => {
+    e.preventDefault()
+    const path = e.dataTransfer.getData("text/plain")
+    console.log("DATA: ", path)
+    
+    window.electronAPI.scanFolder(path)
+      .then((response) => {
+        const newNode = {
+          id: response.folderId,
+          data: {
+            name: response.folderName,
+            files: response.files,
+            subfolders: response.subfolders,
+          },
+          position: {
+            "x": 400,
+            "y": 400
+          },
+          type: "folderNode"
+        }
+
+        console.log("nodes: ", nodes)
+        const newNodes = nodes.concat(newNode)
+
+        setNodes(newNodes)
+      })
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [],
+  );
+
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
     if (response) {
-      console.log("response: ", response)
+      // console.log("response: ", response)
       const { folderId, folderName, files, subfolders } = response
 
       const rootNode = [{
@@ -37,7 +69,7 @@ const onNodesChange = useCallback(
   return (
       <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden'}}>
         <Sidebar handleSelectFolder={handleSelectFolder}/>
-        <div style={{ flexGrow: 1, height: '100vh' }} >
+        <div style={{ flexGrow: 1, height: '100vh' }} onDrop={handleDrop} onDragOver={handleDragOver}>
           <ReactFlow
             nodes={nodes}
             nodeTypes={nodeTypes}

@@ -1,4 +1,4 @@
-import { Folder, FileText, Plus } from 'lucide-react';
+import { Folder } from 'lucide-react';
 
 export default function Sidebar({handleSelectFolder}) {
   return (

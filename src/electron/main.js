@@ -30,18 +30,21 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('open-file', async (event, filePath) => {
+  ipcMain.handle('open-item', async (event, path) => {
     try {
-      const result = await shell.openPath(filePath);
+      const result = await shell.openPath(path);
       if (result) {
         console.error('Error opening file:', result);
       }
-      return result; // empty string means success
     } catch (err) {
       console.error('Failed to open file:', err);
-      throw err;
     }
   });
+
+  ipcMain.handle('scan-folder', async (event, path) => {
+    return scanFolder(path)
+  })
+
   createWindow()
 })
 

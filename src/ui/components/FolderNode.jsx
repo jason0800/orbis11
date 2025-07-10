@@ -9,12 +9,8 @@ function handleFileClick(filePath) {
   });
 }
 
-const handleDragStart = (event, subfolderName) => {
-  // event.dataTransfer.setData(
-  //   'text/plain',
-  //   JSON.stringify({ parentId: id, subfolderName })
-  // );
-  console.log("handle: ", subfolderName)
+const handleDragStart = (event, subfolderPath) => {
+  event.dataTransfer.setData('text/plain', subfolderPath)
 };
 
 function FolderNode(props) {
@@ -47,7 +43,7 @@ function FolderNode(props) {
               title={item.name}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => handleFileClick(item.path)}
-              onDragStart={(e) => handleDragStart(e, item.name)}
+              onDragStart={(e) => handleDragStart(e, item.path)}
               draggable="true"
             >
               <span className="file-name">
