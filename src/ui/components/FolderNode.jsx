@@ -9,36 +9,55 @@ function handleFileClick(filePath) {
   });
 }
 
+const handleDragStart = (event, subfolderName) => {
+  // event.dataTransfer.setData(
+  //   'text/plain',
+  //   JSON.stringify({ parentId: id, subfolderName })
+  // );
+  console.log("handle: ", subfolderName)
+};
+
 function FolderNode(props) {
-  const {label, items} = props.data
-  console.log("PROPS: ", props)
+  const {label, files, subfolders} = props.data
+  // console.log("PROPS: ", props)
   
   return (
     <>
-      <div className="folder-node">
+      <div className="folder-node" draggable="true">
         <div className="folder-node-header">
           <span>{label}</span>
         </div>
         <div className="folder-node-files" >
-          {items.map((item) => {
-            return (
-              <div
-                className="folder-node-file"
-                key={item.id}
-                title={item.name}
-                onClick={() => handleFileClick(item.path)}
-              >
-                <span className="file-name">
-                  {item.name}
-                  {/* <span className="file-ext">{extPart}</span> */}
-                </span>
-                {/* <span className="file-size">{file.size}</span> */}
-              </div>
-            )
-          })}
+          {files.map((item) => (
+            <div
+              className="folder-node-file"
+              key={item.id}
+              title={item.name}
+              onClick={() => handleFileClick(item.path)}
+            >
+              <span className="file-name">
+                📄 {item.name}
+              </span>
+            </div>
+          ))}
+          {subfolders.map((item) => (
+            <div
+              className="folder-node-file nodrag"
+              key={item.id}
+              title={item.name}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={() => handleFileClick(item.path)}
+              onDragStart={(e) => handleDragStart(e, item.name)}
+              draggable="true"
+            >
+              <span className="file-name">
+                📁 {item.name}
+              </span>
+            </div>
+          ))}
         </div>
         <div className="folder-node-footer">
-          {items.length} items
+          {[...files, ...subfolders].length} items
         </div>
         <Handle type="target" position="top" style={{ background: '#555' }} />
         <Handle type="source" position="bottom" style={{ background: '#555', display: 'block' }} />

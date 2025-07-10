@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ReactFlow, Background, Controls } from '@xyflow/react';
+import { useState, useCallback } from 'react';
+import { ReactFlow, Background, Controls, applyNodeChanges } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './App.css'
 import FolderNode from './components/FolderNode'
@@ -7,6 +7,11 @@ import Sidebar from './components/SideBar';
 
 export default function App() {
   const [nodes, setNodes] = useState([])
+
+const onNodesChange = useCallback(
+  (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+  [],
+);
 
   const nodeTypes = {
     folderNode: FolderNode,
@@ -16,14 +21,12 @@ export default function App() {
     const response = await window.electronAPI.selectFolder();
     if (response) {
       console.log("response: ", response)
-      const folderId = response.folderId
-      const folderName = response.folderName
-      const items = response.items
+      const { folderId, folderName, files, subfolders } = response
 
       const rootNode = [{
         id: folderId,
         position: {x: 100, y: 100},
-        data: { label: folderName, items: items },
+        data: { label: folderName, files: files, subfolders: subfolders },
         type: "folderNode"
       }]
       setNodes(rootNode)
@@ -37,8 +40,8 @@ export default function App() {
         <div style={{ flexGrow: 1, height: '100vh' }} >
           <ReactFlow
             nodes={nodes}
-            // edges={edges}
             nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
             minZoom={0.1}
             maxZoom={2}
             style={{
