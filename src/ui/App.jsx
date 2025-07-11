@@ -1,12 +1,14 @@
 import { useState, useCallback } from 'react';
-import { ReactFlow, Background, Controls, applyNodeChanges } from '@xyflow/react';
+import { ReactFlow, Background, Controls, applyNodeChanges, useReactFlow, ReactFlowProvider } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import './App.css'
 import FolderNode from './components/FolderNode'
 import Sidebar from './components/SideBar';
 
-export default function App() {
+function FlowArea() {
   const [nodes, setNodes] = useState([])
+  const [edges, setEdges] = useState([])
+  const { screenToFlowPosition } = useReactFlow()
   
   const nodeTypes = {
     folderNode: FolderNode,
@@ -14,10 +16,16 @@ export default function App() {
 
   const handleDrop = (e) => {
     e.preventDefault()
-    const path = e.dataTransfer.getData("text/plain")
-    console.log("DATA: ", path)
-    
-    window.electronAPI.scanFolder(path)
+    const data = JSON.parse(e.dataTransfer.getData("text/plain"))
+    console.log("HANDLEDROP DATA: ", data)
+    console.log("data.parentId", data.parentId)
+
+    const position = screenToFlowPosition({
+      x: e.clientX,
+      y: e.clientY,
+    });
+
+    window.electronAPI.scanFolder(data.subfolderPath)
       .then((response) => {
         const newNode = {
           id: response.folderId,
@@ -25,18 +33,27 @@ export default function App() {
             name: response.folderName,
             files: response.files,
             subfolders: response.subfolders,
+            parentId: data.parentId,
           },
-          position: {
-            "x": 400,
-            "y": 400
-          },
+          position: position,
           type: "folderNode"
         }
 
-        console.log("nodes: ", nodes)
         const newNodes = nodes.concat(newNode)
 
+        const newEdges = newNodes.map((node) => (
+          {
+            id: `${node.data.parentId}->${node.id}`,
+            source: node.data.parentId,
+            target: node.id
+          }
+        ))
+
+        console.log("NEW NODES: ", newNodes)
+        console.log("NEW EDGES: ", newEdges)
+
         setNodes(newNodes)
+        setEdges(newEdges)
       })
   }
 
@@ -52,17 +69,15 @@ export default function App() {
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
     if (response) {
-      // console.log("response: ", response)
       const { folderId, folderName, files, subfolders } = response
 
       const rootNode = [{
         id: folderId,
         position: {x: 100, y: 100},
-        data: { label: folderName, files: files, subfolders: subfolders },
+        data: { label: folderName, files: files, subfolders: subfolders, parentId: null },
         type: "folderNode"
       }]
       setNodes(rootNode)
-      // setEdges(edges)
     }
   };
 
@@ -72,6 +87,7 @@ export default function App() {
         <div style={{ flexGrow: 1, height: '100vh' }} onDrop={handleDrop} onDragOver={handleDragOver}>
           <ReactFlow
             nodes={nodes}
+            edges={edges}
             nodeTypes={nodeTypes}
             onNodesChange={onNodesChange}
             minZoom={0.1}
@@ -87,4 +103,12 @@ export default function App() {
         </div>
       </div >
   )
+}
+
+export default function App() {
+  return (
+    <ReactFlowProvider>
+      <FlowArea />
+    </ReactFlowProvider>
+  ) 
 }

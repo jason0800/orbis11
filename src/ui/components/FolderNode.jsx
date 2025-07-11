@@ -9,17 +9,21 @@ function handleFileClick(filePath) {
   });
 }
 
-const handleDragStart = (event, subfolderPath) => {
-  event.dataTransfer.setData('text/plain', subfolderPath)
+const handleDragStart = (event, subfolderPath, parentId) => {
+  event.dataTransfer.setData('text/plain', JSON.stringify({
+    subfolderPath: subfolderPath,
+    parentId: parentId,
+  }))
 };
 
 function FolderNode(props) {
+  const id = props.id
   const {label, files, subfolders} = props.data
-  // console.log("PROPS: ", props)
+  console.log("ID OF FOLDER NODE: ", id)
   
   return (
     <>
-      <div className="folder-node" draggable="true">
+      <div className="folder-node">
         <div className="folder-node-header">
           <span>{label}</span>
         </div>
@@ -43,7 +47,7 @@ function FolderNode(props) {
               title={item.name}
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => handleFileClick(item.path)}
-              onDragStart={(e) => handleDragStart(e, item.path)}
+              onDragStart={(e) => handleDragStart(e, item.path, id)}
               draggable="true"
             >
               <span className="file-name">
