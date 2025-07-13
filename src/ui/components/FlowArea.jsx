@@ -1,9 +1,10 @@
-import { ReactFlow, Background, Controls } from '@xyflow/react';
+import { ReactFlow, Background, Controls, MiniMap } from '@xyflow/react';
 import useFlowHandlers from '../hooks/useFlowHandlers';
 import FolderNode from './FolderNode';
 import Sidebar from './SideBar';
 
 export default function FlowArea() {
+
   const {
     nodes,
     edges,
@@ -29,9 +30,13 @@ export default function FlowArea() {
           minZoom={0.1}
           maxZoom={2}
           style={{ width: '100%', height: '100%' }}
+        //   onPaneClick={onPaneClick}
+        //   onNodeContextMenu={onNodeContextMenu}
         >
           <Background />
           <Controls />
+          <MiniMap />
+          
         </ReactFlow>
       </div>
     </div>

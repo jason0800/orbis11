@@ -19,7 +19,6 @@ const handleDragStart = (event, subfolderPath, parentId) => {
 function FolderNode(props) {
   const id = props.id
   const {label, files, subfolders} = props.data
-  console.log("ID OF FOLDER NODE: ", id)
   
   return (
     <>

@@ -1,14 +1,12 @@
-import { useState, useCallback } from 'react';
-import { applyNodeChanges, useReactFlow } from '@xyflow/react';
+import { useState } from 'react';
+import { useReactFlow, applyNodeChanges } from '@xyflow/react';
 
-export default function useFlowHandlers() {
+export default function useFlowHandlers() {  // module
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const { screenToFlowPosition } = useReactFlow();
 
   const handleDrop = (e) => {
-    console.log("nodes at start of handleDrop: ", nodes)
-
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData("text/plain"));
 
@@ -54,9 +52,9 @@ export default function useFlowHandlers() {
     e.preventDefault();
   };
 
-  const onNodesChange = useCallback((changes) =>
-    setNodes((nds) => applyNodeChanges(changes, nds)),
-  []);
+  const onNodesChange = (changes) => {
+    setNodes(applyNodeChanges(changes, nodes)) // applyNodeChanges returns array of updated nodes
+  };
 
   const handleSelectFolder = async () => {
     const response = await window.electronAPI.selectFolder();
@@ -76,8 +74,6 @@ export default function useFlowHandlers() {
   return {
     nodes,
     edges,
-    setNodes,
-    setEdges,
     handleDrop,
     handleDragOver,
     onNodesChange,
