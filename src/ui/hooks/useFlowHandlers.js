@@ -4,6 +4,7 @@ import { useReactFlow, applyNodeChanges } from '@xyflow/react';
 export default function useFlowHandlers() {  // module
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [menu, setMenu] = useState(null)
   const { screenToFlowPosition } = useReactFlow();
 
   const handleDrop = (e) => {
@@ -71,12 +72,65 @@ export default function useFlowHandlers() {  // module
     }
   };
 
+  const onPaneClick = (e) => {
+    console.log("Clicked on pane, e:", e)
+    setMenu(null)
+  }
+
+  const onMoveStart = (e) => {
+    console.log("moving pane, e: ", e)
+    setMenu(null)
+  }
+
+  // const onContextMenu = (e, node) => {
+  //   e.preventDefault()
+  //   console.log(e.dataTransfer.setData)
+
+  //   const position = {
+  //     x: e.clientX,
+  //     y: e.clientY,
+  //   };
+
+  //   console.log("x, y: ", position.x, position.y)
+
+  //   console.log(node)
+  //   setMenu({label: node.data.label, position: position})
+  // }
+
+  const handleHideNode = (id) => {
+    console.log("in handleHideNode, id: ", id)
+
+    const unhiddenNodes = (nodes.filter((node) => node.id !== id))
+    setNodes(unhiddenNodes)
+    
+    setMenu(null)
+  }
+
+  function handleHeaderContextMenu(e, id) {
+    console.log("open menu")
+    console.log("e and id: ", e, id)
+
+    e.preventDefault()
+
+    const position = {
+      x: e.clientX,
+      y: e.clientY,
+    };
+
+    setMenu({id: id, position: position})
+  }
+
   return {
     nodes,
     edges,
+    menu,
     handleDrop,
     handleDragOver,
     onNodesChange,
-    handleSelectFolder
+    handleSelectFolder,
+    onPaneClick,
+    onMoveStart,
+    handleHideNode,
+    handleHeaderContextMenu,
   };
 }

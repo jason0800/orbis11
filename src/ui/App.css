@@ -195,3 +195,25 @@ html, body, #root {
 .sidebar button:hover {
   background-color: rgb(230, 230, 230); /* subtle light overlay on hover */
 }
+
+/* context menu */
+
+.context-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  z-index: 1000;
+  min-width: 120px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.context-menu div {
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.context-menu div:hover {
+  background-color: #f0f0f0;
+}

@@ -1,27 +1,38 @@
+// import { useMemo } from 'react'
 import { ReactFlow, Background, Controls, MiniMap } from '@xyflow/react';
 import useFlowHandlers from '../hooks/useFlowHandlers';
 import FolderNode from './FolderNode';
 import Sidebar from './SideBar';
+import ContextMenu from './ContextMenu';
+
+
 
 export default function FlowArea() {
+  const nodeTypes =
+  {
+    folderNode: (nodeProps) => <FolderNode {...nodeProps} handleHeaderContextMenu={handleHeaderContextMenu} />
+  }
 
   const {
     nodes,
     edges,
+    menu,
     handleDrop,
     handleDragOver,
     onNodesChange,
-    handleSelectFolder
+    handleSelectFolder,
+    onPaneClick,
+    onMoveStart,
+    handleHeaderContextMenu,
+    handleHideNode
   } = useFlowHandlers();
-
-  const nodeTypes = {
-    folderNode: FolderNode,
-  };
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
       <Sidebar handleSelectFolder={handleSelectFolder} />
-      <div style={{ flexGrow: 1, height: '100vh' }} onDrop={handleDrop} onDragOver={handleDragOver}>
+      <div
+        style={{ flexGrow: 1, height: '100vh', position: 'relative' }}
+      >
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -30,13 +41,15 @@ export default function FlowArea() {
           minZoom={0.1}
           maxZoom={2}
           style={{ width: '100%', height: '100%' }}
-        //   onPaneClick={onPaneClick}
-        //   onNodeContextMenu={onNodeContextMenu}
+          onPaneClick={onPaneClick}
+          onMoveStart={onMoveStart}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
         >
           <Background />
           <Controls />
           <MiniMap />
-          
+          {menu && <ContextMenu {...menu} handleHideNode={handleHideNode}/>}
         </ReactFlow>
       </div>
     </div>

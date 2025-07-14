@@ -19,11 +19,12 @@ const handleDragStart = (event, subfolderPath, parentId) => {
 function FolderNode(props) {
   const id = props.id
   const {label, files, subfolders} = props.data
+  const handleHeaderContextMenu = props.handleHeaderContextMenu
   
   return (
     <>
       <div className="folder-node">
-        <div className="folder-node-header">
+        <div className="folder-node-header" onContextMenu={(e)=>handleHeaderContextMenu(e, id)}>
           <span>{label}</span>
         </div>
         <div className="folder-node-files" >
