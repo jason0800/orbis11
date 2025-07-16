@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useReactFlow, applyNodeChanges } from '@xyflow/react';
 
 export default function useFlowHandlers() {  // module
@@ -7,6 +7,29 @@ export default function useFlowHandlers() {  // module
   const [menu, setMenu] = useState(null)
   const { screenToFlowPosition } = useReactFlow();
 
+  // handler for when user selects folder from sidebar
+  const handleSelectFolder = async () => {
+    const response = await window.electronAPI.selectFolder();
+    if (response) {
+      const { dirPath, folderId, folderName, files, subfolders } = response;
+
+      const rootNode = [{
+        id: folderId,
+        position: { x: 100, y: 100 },
+        data: {
+          dirPath: dirPath,
+          label: folderName,
+          files: files,
+          subfolders: subfolders,
+          parentId: null
+        },
+        type: "folderNode"
+      }];
+      setNodes(rootNode);
+    }
+  };
+
+  // handler function for when user drags and drops a folder node
   const handleDrop = (e) => {
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData("text/plain"));
@@ -18,12 +41,16 @@ export default function useFlowHandlers() {  // module
 
     window.electronAPI.scanFolder(data.subfolderPath)
       .then((response) => {
+        console.log("response in handleDrop: ", response)
+        const { dirPath, folderId, folderName, files, subfolders } = response;
+
         const newNode = {
-          id: response.folderId,
+          id: folderId,
           data: {
-            label: response.folderName,
-            files: response.files,
-            subfolders: response.subfolders,
+            dirPath: dirPath,
+            label: folderName,
+            files: files,
+            subfolders: subfolders,
             parentId: data.parentId,
           },
           position,
@@ -55,21 +82,7 @@ export default function useFlowHandlers() {  // module
 
   const onNodesChange = (changes) => {
     setNodes(applyNodeChanges(changes, nodes)) // applyNodeChanges returns array of updated nodes
-  };
-
-  const handleSelectFolder = async () => {
-    const response = await window.electronAPI.selectFolder();
-    if (response) {
-      const { folderId, folderName, files, subfolders } = response;
-
-      const rootNode = [{
-        id: folderId,
-        position: { x: 100, y: 100 },
-        data: { label: folderName, files, subfolders, parentId: null },
-        type: "folderNode"
-      }];
-      setNodes(rootNode);
-    }
+    setMenu(null)
   };
 
   const onPaneClick = (e) => {
@@ -82,21 +95,6 @@ export default function useFlowHandlers() {  // module
     setMenu(null)
   }
 
-  // const onContextMenu = (e, node) => {
-  //   e.preventDefault()
-  //   console.log(e.dataTransfer.setData)
-
-  //   const position = {
-  //     x: e.clientX,
-  //     y: e.clientY,
-  //   };
-
-  //   console.log("x, y: ", position.x, position.y)
-
-  //   console.log(node)
-  //   setMenu({label: node.data.label, position: position})
-  // }
-
   const handleHideNode = (id) => {
     console.log("in handleHideNode, id: ", id)
 
@@ -106,10 +104,7 @@ export default function useFlowHandlers() {  // module
     setMenu(null)
   }
 
-  function handleHeaderContextMenu(e, id) {
-    console.log("open menu")
-    console.log("e and id: ", e, id)
-
+  const handleHeaderContextMenu = useCallback((e, id, dirPath) => {
     e.preventDefault()
 
     const position = {
@@ -117,7 +112,14 @@ export default function useFlowHandlers() {  // module
       y: e.clientY,
     };
 
-    setMenu({id: id, position: position})
+    setMenu({id: id, dirPath: dirPath, position: position})
+  }, [])
+
+  const handleCopyPath = (dirPath) => {
+    console.log("in handleCopyPath, dirPath: ", dirPath)
+    window.electronAPI.copyToClipboard(dirPath)
+
+    setMenu(null)
   }
 
   return {
@@ -132,5 +134,6 @@ export default function useFlowHandlers() {  // module
     onMoveStart,
     handleHideNode,
     handleHeaderContextMenu,
+    handleCopyPath,
   };
 }

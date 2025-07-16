@@ -1,18 +1,11 @@
-// import { useMemo } from 'react'
+import { useMemo } from 'react'
 import { ReactFlow, Background, Controls, MiniMap } from '@xyflow/react';
 import useFlowHandlers from '../hooks/useFlowHandlers';
 import FolderNode from './FolderNode';
 import Sidebar from './SideBar';
 import ContextMenu from './ContextMenu';
 
-
-
 export default function FlowArea() {
-  const nodeTypes =
-  {
-    folderNode: (nodeProps) => <FolderNode {...nodeProps} handleHeaderContextMenu={handleHeaderContextMenu} />
-  }
-
   const {
     nodes,
     edges,
@@ -24,8 +17,15 @@ export default function FlowArea() {
     onPaneClick,
     onMoveStart,
     handleHeaderContextMenu,
-    handleHideNode
+    handleHideNode,
+    handleCopyPath,
   } = useFlowHandlers();
+
+  const nodeTypes = useMemo(() => ({
+    folderNode: (nodeProps) => (
+      <FolderNode {...nodeProps} handleHeaderContextMenu={handleHeaderContextMenu} />
+    )
+  }), [handleHeaderContextMenu]);
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
@@ -49,7 +49,12 @@ export default function FlowArea() {
           <Background />
           <Controls />
           <MiniMap />
-          {menu && <ContextMenu {...menu} handleHideNode={handleHideNode}/>}
+          {menu &&
+          <ContextMenu
+            {...menu}
+            handleHideNode={handleHideNode}
+            handleCopyPath={handleCopyPath}
+          />}
         </ReactFlow>
       </div>
     </div>

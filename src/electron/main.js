@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell, clipboard} from 'electron';
 import path from "node:path";
 import { isDev, scanFolder } from './util.js';
 
@@ -43,6 +43,11 @@ app.whenReady().then(() => {
 
   ipcMain.handle('scan-folder', async (event, path) => {
     return scanFolder(path)
+  })
+
+  ipcMain.handle('copy-to-clipboard', (event, dirPath) => {
+    console.log(typeof dirPath)
+    clipboard.writeText(dirPath)
   })
 
   createWindow()

@@ -201,19 +201,21 @@ html, body, #root {
 .context-menu {
   position: absolute;
   background: white;
-  border: 1px solid #ccc;
+  border: 1px solid #eee;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 12px;
   z-index: 1000;
   min-width: 120px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .context-menu div {
-  padding: 6px 8px;
+  font-size: 14px;
+  padding: 5px 7px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .context-menu div:hover {
-  background-color: #f0f0f0;
+  background: #f0f4f8;
 }

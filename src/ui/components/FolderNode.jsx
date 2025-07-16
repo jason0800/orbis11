@@ -1,5 +1,6 @@
 import { Handle } from "@xyflow/react";
 
+// drag and drop API
 function handleFileClick(filePath) {
   window.electronAPI.openFile(filePath)
   .then(result => {
@@ -16,15 +17,17 @@ const handleDragStart = (event, subfolderPath, parentId) => {
   }))
 };
 
+// react component
 function FolderNode(props) {
+  console.log("props in FolderNode: ", props)
   const id = props.id
-  const {label, files, subfolders} = props.data
+  const {dirPath, label, files, subfolders} = props.data
   const handleHeaderContextMenu = props.handleHeaderContextMenu
   
   return (
     <>
       <div className="folder-node">
-        <div className="folder-node-header" onContextMenu={(e)=>handleHeaderContextMenu(e, id)}>
+        <div className="folder-node-header" onContextMenu={(e)=>handleHeaderContextMenu(e, id, dirPath)}>
           <span>{label}</span>
         </div>
         <div className="folder-node-files" >
@@ -37,6 +40,9 @@ function FolderNode(props) {
             >
               <span className="file-name">
                 📄 {item.name}
+              </span>
+              <span style={{color:"grey"}}>
+                {item.size}
               </span>
             </div>
           ))}

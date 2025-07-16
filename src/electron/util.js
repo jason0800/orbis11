@@ -46,5 +46,5 @@ export function scanFolder(dirPath) {
             })
         }
     })
-    return { folderId, folderName, files, subfolders }
+    return { dirPath, folderId, folderName, files, subfolders }
 }
