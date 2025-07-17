@@ -29,7 +29,7 @@ export default function useFlowHandlers() {  // module
     }
   };
 
-  // handler function for when user drags and drops a folder node
+  // handler for when user drags and drops a folder node
   const handleDrop = (e) => {
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData("text/plain"));
@@ -41,7 +41,6 @@ export default function useFlowHandlers() {  // module
 
     window.electronAPI.scanFolder(data.subfolderPath)
       .then((response) => {
-        console.log("response in handleDrop: ", response)
         const { dirPath, folderId, folderName, files, subfolders } = response;
 
         const newNode = {
@@ -57,9 +56,9 @@ export default function useFlowHandlers() {  // module
           type: "folderNode"
         };
 
-        const nodeAlreadyExists = nodes.some((node) =>
-          newNode.data.label === node.data.label && newNode.parentId === node.parentId
-        );
+        const nodeAlreadyExists = nodes.some((n) => (
+          dirPath === n.data.dirPath
+        ))
 
         if (!nodeAlreadyExists) {
           const newNodes = nodes.concat(newNode);
@@ -71,7 +70,7 @@ export default function useFlowHandlers() {  // module
           setNodes(newNodes);
           setEdges(newEdges);
         } else {
-          alert("folder node already exists :(");
+          alert("The folder node already exists 😔");
         }
       });
   };
@@ -85,22 +84,13 @@ export default function useFlowHandlers() {  // module
     setMenu(null)
   };
 
-  const onPaneClick = (e) => {
-    console.log("Clicked on pane, e:", e)
+  // Folder Header Context Menu Handlers
+
+  const onPaneClick = () => {
     setMenu(null)
   }
 
-  const onMoveStart = (e) => {
-    console.log("moving pane, e: ", e)
-    setMenu(null)
-  }
-
-  const handleHideNode = (id) => {
-    console.log("in handleHideNode, id: ", id)
-
-    const unhiddenNodes = (nodes.filter((node) => node.id !== id))
-    setNodes(unhiddenNodes)
-    
+  const onMoveStart = () => {
     setMenu(null)
   }
 
@@ -115,10 +105,22 @@ export default function useFlowHandlers() {  // module
     setMenu({id: id, dirPath: dirPath, position: position})
   }, [])
 
+  const handleHideNode = (id) => {
+    const unhiddenNodes = (nodes.filter((node) => node.id !== id))
+    setNodes(unhiddenNodes)
+    
+    setMenu(null)
+  }
+
   const handleCopyPath = (dirPath) => {
     console.log("in handleCopyPath, dirPath: ", dirPath)
     window.electronAPI.copyToClipboard(dirPath)
+    setMenu(null)
+  }
 
+  const handleCreateFile = (dirPath) => {
+    console.log("in handleCreateFile")
+    window.electronAPI.createFile(dirPath)
     setMenu(null)
   }
 
@@ -135,5 +137,6 @@ export default function useFlowHandlers() {  // module
     handleHideNode,
     handleHeaderContextMenu,
     handleCopyPath,
+    handleCreateFile,
   };
 }

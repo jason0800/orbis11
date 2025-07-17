@@ -19,6 +19,7 @@ export default function FlowArea() {
     handleHeaderContextMenu,
     handleHideNode,
     handleCopyPath,
+    handleCreateFile,
   } = useFlowHandlers();
 
   const nodeTypes = useMemo(() => ({
@@ -54,6 +55,7 @@ export default function FlowArea() {
             {...menu}
             handleHideNode={handleHideNode}
             handleCopyPath={handleCopyPath}
+            handleCreateFile={handleCreateFile}
           />}
         </ReactFlow>
       </div>

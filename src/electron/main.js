@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog, shell, clipboard} from 'electron';
-import path from "node:path";
+import fs from 'fs';
+import path from 'path';
 import { isDev, scanFolder } from './util.js';
 
 function createWindow () {
@@ -30,9 +31,9 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('open-item', async (event, path) => {
+  ipcMain.handle('open-item', async (event, dirPath) => {
     try {
-      const result = await shell.openPath(path);
+      const result = await shell.openPath(dirPath);
       if (result) {
         console.error('Error opening file:', result);
       }
@@ -41,13 +42,26 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('scan-folder', async (event, path) => {
-    return scanFolder(path)
+  ipcMain.handle('scan-folder', async (event, dirPath) => {
+    return scanFolder(dirPath)
   })
 
   ipcMain.handle('copy-to-clipboard', (event, dirPath) => {
     console.log(typeof dirPath)
     clipboard.writeText(dirPath)
+  })
+
+  ipcMain.handle('create-file', (event, dirPath) => {
+    console.log("in create-file, path: ", dirPath)
+    const fileToWrite = path.join(dirPath, "test.txt")
+    
+    fs.writeFile(fileToWrite, "", err => {
+      if (err) {
+        console.error(err);
+      } else {
+        // file written successfully
+      }
+    });
   })
 
   createWindow()

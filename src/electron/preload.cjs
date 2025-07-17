@@ -4,5 +4,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   selectFolder: () => ipcRenderer.invoke('select-folder'),
   openFile: (path) => ipcRenderer.invoke('open-item', path),
   scanFolder: (path) => ipcRenderer.invoke('scan-folder', path),
-  copyToClipboard: (path) => ipcRenderer.invoke('copy-to-clipboard', path)
+  copyToClipboard: (path) => ipcRenderer.invoke('copy-to-clipboard', path),
+  createFile: (path) => ipcRenderer.invoke('create-file', path)
 })

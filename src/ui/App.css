@@ -42,30 +42,9 @@ html, body, #root {
   color: #888;
 }
 
-.drop-zone {
-  width: 300px;
-  height: 150px;
-  border: 3px dashed #ccc;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #999;
-  cursor: pointer;
-  user-select: none;
-  margin: 20px auto;
-  /* Optional: smooth transition on border color when dragging */
-  transition: border-color 0.3s ease;
-}
-
-.drop-zone:hover {
-  border-color: #888;
-  cursor: default;
-}
-
 .folder-node {
-  width: 260px;
-  max-height: 220px;
+  min-width: 260px;
+  min-height: 220px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
@@ -214,6 +193,7 @@ html, body, #root {
   padding: 5px 7px;
   cursor: pointer;
   border-radius: 5px;
+  transition: background 0.2s;
 }
 
 .context-menu div:hover {

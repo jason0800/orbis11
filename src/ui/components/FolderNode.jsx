@@ -1,4 +1,4 @@
-import { Handle } from "@xyflow/react";
+import { Handle, NodeResizer } from "@xyflow/react";
 
 // drag and drop API
 function handleFileClick(filePath) {
@@ -21,11 +21,18 @@ const handleDragStart = (event, subfolderPath, parentId) => {
 function FolderNode(props) {
   console.log("props in FolderNode: ", props)
   const id = props.id
+  const selected = props.selected
   const {dirPath, label, files, subfolders} = props.data
   const handleHeaderContextMenu = props.handleHeaderContextMenu
   
   return (
     <>
+    <NodeResizer
+      color="#d3d3d3ff"
+      isVisible={selected}
+      minWidth={100}
+      minHeight={30}
+    />
       <div className="folder-node">
         <div className="folder-node-header" onContextMenu={(e)=>handleHeaderContextMenu(e, id, dirPath)}>
           <span>{label}</span>
