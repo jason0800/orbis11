@@ -23,7 +23,11 @@ export default function useFlowHandlers() {  // module
           subfolders: subfolders,
           parentId: null
         },
-        type: "folderNode"
+        type: "folderNode",
+        style: {
+          width: 260,     // match your min-width
+          height: 200,    // match your min-height
+        },
       }];
       setNodes(rootNode);
     }
@@ -53,7 +57,11 @@ export default function useFlowHandlers() {  // module
             parentId: data.parentId,
           },
           position,
-          type: "folderNode"
+          type: "folderNode",
+          style: {
+            width: 260,     // match your min-width
+            height: 200,    // match your min-height
+          },
         };
 
         const nodeAlreadyExists = nodes.some((n) => (
@@ -113,15 +121,39 @@ export default function useFlowHandlers() {  // module
   }
 
   const handleCopyPath = (dirPath) => {
-    console.log("in handleCopyPath, dirPath: ", dirPath)
     window.electronAPI.copyToClipboard(dirPath)
     setMenu(null)
   }
 
   const handleCreateFile = (dirPath) => {
-    console.log("in handleCreateFile")
     window.electronAPI.createFile(dirPath)
+    handleRefresh()
     setMenu(null)
+  }
+
+  async function handleRefresh() {
+    console.log("handle refresh") // re-scan all displayed nodes
+
+    const refreshedNodes = await Promise.all(
+      nodes.map(async (node) => {
+        console.log("node: ", node)
+
+        const response = await window.electronAPI.scanFolder(node.data.dirPath)
+        const { files, subfolders } = response
+        const refreshedNode = {
+          ...node,
+          data: {
+            ...node.data,
+            files,
+            subfolders,
+          }
+      };
+      console.log("refreshedNode: ", refreshedNode)
+      return refreshedNode
+    }))
+
+    console.log("refreshedNodes: ", refreshedNodes)
+    setNodes(refreshedNodes)
   }
 
   return {
@@ -138,5 +170,6 @@ export default function useFlowHandlers() {  // module
     handleHeaderContextMenu,
     handleCopyPath,
     handleCreateFile,
+    handleRefresh,
   };
 }

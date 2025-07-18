@@ -42,9 +42,10 @@ html, body, #root {
   color: #888;
 }
 
+
+/* react flow folder nodes */
 .folder-node {
-  min-width: 260px;
-  min-height: 220px;
+  height: 100%;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
@@ -72,20 +73,21 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 200px;
   cursor: pointer;
+  min-height: 0; /* required for flexbox scrolling */
 }
 
 .folder-node-file {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  font-size: 12px;
-  color: #333;
-  padding-top: 4px;
+
   padding: 3px 6px;
-  cursor: pointer;
-  transition: background 0.2s;
   border-radius: 5px;
+  transition: background 0.2s;
+  cursor: pointer;
+  font-size: 12px;
 }
 
 .folder-node-file:hover {
@@ -108,16 +110,22 @@ html, body, #root {
 }
 
 .file-name {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 150px;
+  margin-right: 7px;
 }
 
 .file-size {
-  color: #888;
+  flex-shrink: 0;       /* do not shrink */
+  white-space: nowrap;  /* prevent wrapping */
   font-size: 12px;
-  flex-shrink: 0;
+  color: #888;
+  margin-left: 8px;
+  max-width: 60px;      /* optional: control upper limit */
+  text-align: right;    /* aligns numbers nicely */
 }
 
 .folder-node-footer {
@@ -137,6 +145,15 @@ html, body, #root {
 .file-ext {
   color: #999;
   margin-left: 2px;
+}
+
+.no-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: grey;
+  flex: 0.8
 }
 
 /* sidebar */
@@ -198,4 +215,39 @@ html, body, #root {
 
 .context-menu div:hover {
   background: #f0f4f8;
+}
+
+/* menu bar */
+
+.menubar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 48px;
+  background-color: #f8f8f8; /* adjust if using a dark theme */
+  padding: 0 12px;
+  gap: 4px; /* spacing between buttons */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid #ddd;
+  box-sizing: border-box;
+}
+
+.menubar button {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  color: #333; /* or white if your sidebar bg is dark */
+  padding: 7px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  background-color: transparent; /* or set a bg color */
+  border: none; /* remove default border, or customize */
+  gap: 8px; /* space between child elements if any */
+  box-sizing: border-box;
+  text-align: left; /* keep text aligned left */
+}
+
+.menubar button:hover {
+  background-color: rgb(230, 230, 230); /* subtle light overlay on hover */
 }
