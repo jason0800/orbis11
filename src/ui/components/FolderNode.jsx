@@ -1,6 +1,5 @@
 import { Handle, NodeResizer } from "@xyflow/react";
 
-// drag and drop API
 function handleFileClick(filePath) {
   window.electronAPI.openFile(filePath)
   .then(result => {
@@ -10,6 +9,7 @@ function handleFileClick(filePath) {
   });
 }
 
+// drag and drop API
 const handleDragStart = (event, subfolderPath, parentId) => {
   event.dataTransfer.setData('text/plain', JSON.stringify({
     subfolderPath: subfolderPath,
@@ -20,7 +20,7 @@ const handleDragStart = (event, subfolderPath, parentId) => {
 // react component
 function FolderNode(props) {
   console.log("props in FolderNode: ", props)
-  const { id, selected, handleHeaderContextMenu } = props
+  const { id, selected, handleHeaderContextMenu, handleFileContextMenu } = props
   const {dirPath, label, files, subfolders} = props.data
 
   if (files.length === 0 && subfolders.length === 0) {
@@ -59,6 +59,7 @@ function FolderNode(props) {
                   key={item.id}
                   title={item.name}
                   onClick={() => handleFileClick(item.path)}
+                  onContextMenu={(e) => handleFileContextMenu(e, item.path)}
                 >
                   <span className="file-name">
                     📄 {item.name}

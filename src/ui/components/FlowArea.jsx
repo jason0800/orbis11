@@ -3,13 +3,15 @@ import { ReactFlow, Background, Controls, MiniMap, ControlButton } from '@xyflow
 import useFlowHandlers from '../hooks/useFlowHandlers';
 import FolderNode from './FolderNode';
 import SideBar from './SideBar';
-import ContextMenu from './ContextMenu';
+import HeaderContextMenu from './HeaderContextMenu';
+import FileContextMenu from './FileContextMenu';
 
 export default function FlowArea() {
   const {
     nodes,
     edges,
-    menu,
+    headerContextMenu,
+    fileContextMenu,
     handleDrop,
     handleDragOver,
     onNodesChange,
@@ -17,17 +19,24 @@ export default function FlowArea() {
     onPaneClick,
     onMoveStart,
     handleHeaderContextMenu,
+    handleFileContextMenu,
     handleHideNode,
     handleCopyPath,
     handleCreateFile,
+    handleDeleteFile,
+    handleRenameFile,
     handleRefresh,
   } = useFlowHandlers();
 
   const nodeTypes = useMemo(() => ({
     folderNode: (nodeProps) => (
-      <FolderNode {...nodeProps} handleHeaderContextMenu={handleHeaderContextMenu}/>
+      <FolderNode
+        {...nodeProps}
+        handleHeaderContextMenu={handleHeaderContextMenu}
+        handleFileContextMenu={handleFileContextMenu}
+      />
     )
-  }), [handleHeaderContextMenu]);
+  }), [handleHeaderContextMenu, handleFileContextMenu]);
 
   return (
     <>
@@ -56,13 +65,23 @@ export default function FlowArea() {
               </ControlButton>
             </Controls>
             <MiniMap />
-            {menu &&
-            <ContextMenu
-              {...menu}
-              handleHideNode={handleHideNode}
-              handleCopyPath={handleCopyPath}
-              handleCreateFile={handleCreateFile}
-            />}
+            {
+              headerContextMenu &&
+              <HeaderContextMenu
+                {...headerContextMenu}
+                handleHideNode={handleHideNode}
+                handleCopyPath={handleCopyPath}
+                handleCreateFile={handleCreateFile}
+              />
+            }
+            {
+              fileContextMenu &&
+              <FileContextMenu
+                {...fileContextMenu}
+                handleDeleteFile={handleDeleteFile}
+                handleRenameFile={handleRenameFile}
+              />
+            }
           </ReactFlow>
         </div>
       </div>

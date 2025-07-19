@@ -42,7 +42,7 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('scan-folder', async (event, dirPath) => {
+  ipcMain.handle('scan-folder', (event, dirPath) => {
     return scanFolder(dirPath)
   })
 
@@ -51,9 +51,9 @@ app.whenReady().then(() => {
     clipboard.writeText(dirPath)
   })
 
-  ipcMain.handle('create-file', (event, dirPath) => {
-    console.log("in create-file, path: ", dirPath)
-    const fileToWrite = path.join(dirPath, "test.txt")
+  ipcMain.handle('create-file', (event, dirPath, fileName) => {
+    console.log("in create-file: ", dirPath, fileName)
+    const fileToWrite = path.join(dirPath, fileName)
     
     fs.writeFile(fileToWrite, "", err => {
       if (err) {
@@ -62,6 +62,14 @@ app.whenReady().then(() => {
         // file written successfully
       }
     });
+  })
+
+  ipcMain.handle('delete-file', (event, filePath) => {
+    console.log("in delete-file: ", filePath)
+    fs.unlink(filePath, (err) => {
+      if (err) throw err;
+      console.log(`${path.basename(filePath)} was deleted.`);
+    }); 
   })
 
   createWindow()

@@ -2,8 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   selectFolder: () => ipcRenderer.invoke('select-folder'),
-  openFile: (path) => ipcRenderer.invoke('open-item', path),
-  scanFolder: (path) => ipcRenderer.invoke('scan-folder', path),
-  copyToClipboard: (path) => ipcRenderer.invoke('copy-to-clipboard', path),
-  createFile: (path) => ipcRenderer.invoke('create-file', path)
+  openFile: (dirPath) => ipcRenderer.invoke('open-item', dirPath),
+  scanFolder: (dirPath) => ipcRenderer.invoke('scan-folder', dirPath),
+  copyToClipboard: (dirPath) => ipcRenderer.invoke('copy-to-clipboard', dirPath),
+  createFile: (dirPath, fileName) => ipcRenderer.invoke('create-file', dirPath, fileName),
+  deleteFile: (filePath) => ipcRenderer.invoke('delete-file', filePath),
 })

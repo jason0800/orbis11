@@ -4,7 +4,8 @@ import { useReactFlow, applyNodeChanges } from '@xyflow/react';
 export default function useFlowHandlers() {  // module
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
-  const [menu, setMenu] = useState(null)
+  const [headerContextMenu, setHeaderContextMenu] = useState(null)
+  const [fileContextMenu, setFileContextMenu] = useState(null)
   const { screenToFlowPosition } = useReactFlow();
 
   // handler for when user selects folder from sidebar
@@ -89,55 +90,89 @@ export default function useFlowHandlers() {  // module
 
   const onNodesChange = (changes) => {
     setNodes(applyNodeChanges(changes, nodes)) // applyNodeChanges returns array of updated nodes
-    setMenu(null)
+    setHeaderContextMenu(null)
+    setFileContextMenu(null)
   };
 
-  // Folder Header Context Menu Handlers
-
   const onPaneClick = () => {
-    setMenu(null)
+    setHeaderContextMenu(null)
+    setFileContextMenu(null)
   }
 
   const onMoveStart = () => {
-    setMenu(null)
+    setHeaderContextMenu(null)
+    setFileContextMenu(null)
   }
 
+  ///////////////////// Folder Header Context Menu Handlers ////////////////////////////
+
+  // handler to open header context menu when r-clicking on folder node header
   const handleHeaderContextMenu = useCallback((e, id, dirPath) => {
     e.preventDefault()
+    setFileContextMenu(null)
+    setHeaderContextMenu(null)
 
     const position = {
       x: e.clientX,
       y: e.clientY,
     };
 
-    setMenu({id: id, dirPath: dirPath, position: position})
+    setHeaderContextMenu({id, dirPath, position})
   }, [])
 
   const handleHideNode = (id) => {
     const unhiddenNodes = (nodes.filter((node) => node.id !== id))
     setNodes(unhiddenNodes)
     
-    setMenu(null)
+    setHeaderContextMenu(null)
   }
 
   const handleCopyPath = (dirPath) => {
     window.electronAPI.copyToClipboard(dirPath)
-    setMenu(null)
+    setHeaderContextMenu(null)
   }
 
-  const handleCreateFile = (dirPath) => {
-    window.electronAPI.createFile(dirPath)
-    handleRefresh()
-    setMenu(null)
+  const handleCreateFile = (dirPath, fileName) => {
+    console.log("in handleCreateFile: ", dirPath, fileName)
+    window.electronAPI.createFile(dirPath, fileName).then(()=>handleRefresh())
+    setHeaderContextMenu(null)
   }
+
+  //////////////////////////////////////////////////////////////////////
+
+  //////////// File Context Menu Handlers //////////////////////////////
+
+  // handler to open file context menu when r-clicking on file
+  const handleFileContextMenu = useCallback((e, filePath) => {
+    e.preventDefault()
+    setHeaderContextMenu(null)
+    setFileContextMenu(null)
+
+    const position = {
+      x: e.clientX,
+      y: e.clientY,
+    }
+
+    setFileContextMenu({position: position, filePath})
+  }, [])
+  
+  const handleRenameFile = (filePath) => {
+    console.log("in handleRenameFile: ", filePath)
+
+    setFileContextMenu(null)
+  }
+  
+  const handleDeleteFile = (filePath) => {
+    console.log("in handleDeleteFile: ", filePath)
+
+    window.electronAPI.deleteFile(filePath).then(()=>handleRefresh())
+    setFileContextMenu(null)
+  }
+  /////////////////////////////////////////////////////////////////////////
 
   async function handleRefresh() {
-    console.log("handle refresh") // re-scan all displayed nodes
-
     const refreshedNodes = await Promise.all(
       nodes.map(async (node) => {
-        console.log("node: ", node)
-
         const response = await window.electronAPI.scanFolder(node.data.dirPath)
         const { files, subfolders } = response
         const refreshedNode = {
@@ -147,19 +182,17 @@ export default function useFlowHandlers() {  // module
             files,
             subfolders,
           }
-      };
-      console.log("refreshedNode: ", refreshedNode)
+        };
       return refreshedNode
     }))
-
-    console.log("refreshedNodes: ", refreshedNodes)
     setNodes(refreshedNodes)
   }
 
   return {
     nodes,
     edges,
-    menu,
+    headerContextMenu,
+    fileContextMenu,
     handleDrop,
     handleDragOver,
     onNodesChange,
@@ -168,8 +201,11 @@ export default function useFlowHandlers() {  // module
     onMoveStart,
     handleHideNode,
     handleHeaderContextMenu,
+    handleFileContextMenu,
     handleCopyPath,
     handleCreateFile,
+    handleDeleteFile,
+    handleRenameFile,
     handleRefresh,
   };
 }
